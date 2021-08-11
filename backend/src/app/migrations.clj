@@ -197,9 +197,6 @@
    {:name "0062-fix-metadata-media"
     :fn (mg/resource "app/migrations/sql/0062-fix-metadata-media.sql")}
 
-   {:name "0062-fix-metadata-media"
-    :fn (mg/resource "app/migrations/sql/0062-fix-metadata-media.sql")}
-
    {:name "0063-add-share-link-table"
     :fn (mg/resource "app/migrations/sql/0063-add-share-link-table.sql")}
    ])
