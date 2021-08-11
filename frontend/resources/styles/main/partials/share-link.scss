@@ -1,0 +1,88 @@
+.share-link-dialog {
+  width: 475px;
+
+  .modal-content {
+    padding: 26px;
+
+    .title {
+      display: flex;
+      justify-content: space-between;
+
+      h2 {
+        font-size: $fs18;
+        color: $color-black;
+      }
+
+      .modal-close-button {
+        margin-right: 0px;
+      }
+    }
+  }
+
+  .modal-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    .btn-get-link {
+      width: 126px;
+      margin-bottom: 0px;
+
+    }
+  }
+
+  .link-container {
+    margin-top: 12px;
+    label {
+      font-size: $fs11;
+      color: $color-black;
+    }
+
+    .hint {
+      padding-top: 10px;
+      font-size: $fs11;
+    }
+  }
+
+  .view-mode,
+  .access-mode {
+    display: flex;
+    flex-direction: column;
+
+    .title {
+      color: $color-black;
+      font-weight: 400;
+    }
+
+    .items {
+      padding-left: 20px;
+      display: flex;
+
+      > div {
+        display: flex;
+
+        /* input { */
+        /*   appearance: checkbox; */
+        /* } */
+
+        label {
+          display: flex;
+          align-items: center;
+          color: $color-black;
+        }
+      }
+    }
+  }
+
+  .pages-selection {
+    padding-left: 20px;
+    max-height: 200px;
+    overflow-y: scroll;
+  }
+
+  .custom-input {
+    input {
+      padding: 0 0 0 15px;
+    }
+  }
+
+}

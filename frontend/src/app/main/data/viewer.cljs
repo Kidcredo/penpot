@@ -93,6 +93,13 @@
       ;; TODO: complete this
       (dissoc state :viewer-file :viewer-project :viewer-local))))
 
+(defn select-frames
+  [{:keys [objects] :as page}]
+  (let [root (get objects uuid/zero)]
+    (into [] (comp (map #(get objects %))
+                   (filter #(= :frame (:type %))))
+          (reverse (:shapes root)))))
+
 ;; --- Data Fetching
 
 (s/def ::fetch-bundle-params
@@ -116,15 +123,22 @@
 (defn bundle-fetched
   [{:keys [project file share-links libraries users] :as bundle}]
   ;; (us/verify ::bundle bundle)
-  (ptk/reify ::bundle-fetched
-    ptk/UpdateEvent
-    (update [_ state]
-      (assoc state :viewer
-             {:libraries (d/index-by :id libraries)
-              :users (d/index-by :id users)
-              :share-links share-links
-              :project project
-              :file file}))))
+  (let [pages (->> (get-in file [:data :pages])
+                   (map (fn [page-id]
+                          (let [data (get-in file [:data :pages-index page-id])]
+                            [page-id (assoc data :frames (select-frames data))])))
+                   (into {}))]
+
+    (ptk/reify ::bundle-fetched
+      ptk/UpdateEvent
+      (update [_ state]
+        (assoc state :viewer
+               {:libraries (d/index-by :id libraries)
+                :users (d/index-by :id users)
+                :share-links share-links
+                :project project
+                :pages pages
+                :file file})))))
 
 (defn fetch-comment-threads
   [{:keys [file-id page-id] :as params}]
@@ -244,29 +258,32 @@
     ptk/WatchEvent
     (watch [_ state _]
       (let [route   (:route state)
-            screen  (-> route :data :name keyword)
             qparams (:query-params route)
             pparams (:path-params route)
             index   (:index qparams)]
         (when (pos? index)
           (rx/of
            (dcm/close-thread)
-           (rt/nav screen pparams (assoc qparams :index (dec index)))))))))
+           (rt/nav :viewer pparams (assoc qparams :index (dec index)))))))))
 
 (def select-next-frame
   (ptk/reify ::select-prev-frame
     ptk/WatchEvent
     (watch [_ state _]
+      (prn "select-next-frame")
       (let [route   (:route state)
-            screen  (-> route :data :name keyword)
-            qparams (:query-params route)
             pparams (:path-params route)
+            qparams (:query-params route)
+
+            page-id (:page-id pparams)
             index   (:index qparams)
-            total   (count (get-in state [:viewer-data :frames]))]
+
+            total   (count (get-in state [:viewer :pages page-id :frames]))]
+
         (when (< index (dec total))
           (rx/of
            (dcm/close-thread)
-           (rt/nav screen pparams (assoc qparams :index (inc index)))))))))
+           (rt/nav :viewer pparams (assoc qparams :index (inc index)))))))))
 
 (s/def ::interactions-mode #{:hide :show :show-on-click})
 

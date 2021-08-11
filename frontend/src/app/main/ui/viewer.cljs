@@ -20,6 +20,7 @@
    [app.main.store :as st]
    [app.main.ui.comments :as cmt]
    [app.main.ui.hooks :as hooks]
+   [app.main.ui.share-link :refer [share-link-dialog]]
    [app.main.ui.viewer.comments :refer [comments-layer]]
    [app.main.ui.viewer.header :refer [header]]
    [app.main.ui.viewer.shapes :as shapes]
@@ -54,15 +55,11 @@
         project (:project data)
 
         page    (mf/use-memo
-                 (mf/deps file page-id)
+                 (mf/deps data page-id)
                  (fn []
-                   (get-in file [:data :pages-index page-id])))
+                   (get-in data [:pages page-id])))
 
-        frames  (mf/use-memo
-                 (mf/deps page)
-                 (fn []
-                   (select-frames page)))
-
+        frames  (:frames page)
         frame   (get frames index)]
 
     (hooks/use-shortcuts ::viewer sc/shortcuts)
@@ -78,7 +75,6 @@
                    :force-visible (:show-thumbnails local)
                    :viewer-layout (not= section :handoff)
                    :handoff-layout (= section :handoff))}
-
 
      [:& header {:project project
                  :file file
@@ -141,4 +137,7 @@
 
   (when-let [data (mf/deref refs/viewer-data)]
     (let [key (str (get-in data [:file :id]))]
-      [:& viewer {:params props :data data :key key}])))
+      [:*
+       [:div.modal-wrapper
+        [:& share-link-dialog]]
+       [:& viewer {:params props :data data :key key}]])))
