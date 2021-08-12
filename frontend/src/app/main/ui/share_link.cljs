@@ -34,7 +34,7 @@
      [:div.modal-container.share-link-dialog
       [:div.modal-content
        [:div.title
-        [:h2 (tr "dashboard.export.title")]
+        [:h2 "Share prototypes"]
         [:div.modal-close-button
          {:on-click cancel-fn} i/close]]
 
@@ -43,6 +43,7 @@
         [:div.custom-input.with-icon
          [:input {:type "text"}]
          [:div.help-icon i/copy]]
+
         [:div.hint "Anyone with link will have access"]]]
 
       [:div.modal-content
@@ -51,9 +52,9 @@
         [:div.items
          [:div.input-checkbox.check-primary
           [:input {:type "checkbox"}]
-          [:label "Viewer mode"]]
+          [:label "Viewer mode" [:span.hint "(default)"]]]
 
-         [:div.input-checkbox.check-primary
+         [:div.input-checkbox.check-primary.disabled
           [:input.check-primary.input-checkbox {:type "checkbox"}]
           [:label "Workspace"]]]]
 
