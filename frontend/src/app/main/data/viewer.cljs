@@ -132,13 +132,13 @@
     (ptk/reify ::bundle-fetched
       ptk/UpdateEvent
       (update [_ state]
-        (assoc state :viewer
-               {:libraries (d/index-by :id libraries)
-                :users (d/index-by :id users)
-                :share-links share-links
-                :project project
-                :pages pages
-                :file file})))))
+        (-> state
+            (assoc :share-links share-links)
+            (assoc :viewer {:libraries (d/index-by :id libraries)
+                            :users (d/index-by :id users)
+                            :project project
+                            :pages pages
+                            :file file}))))))
 
 (defn fetch-comment-threads
   [{:keys [file-id page-id] :as params}]

@@ -18,6 +18,7 @@
    [app.main.ui.components.dropdown :refer [dropdown]]
    [app.main.ui.components.fullscreen :as fs]
    [app.main.ui.icons :as i]
+   [app.main.data.modal :as modal]
    [app.main.ui.viewer.comments :refer [comments-menu]]
    [app.main.ui.workspace.header :refer [zoom-widget]]
    [app.main.ui.viewer.interactions :refer [interactions-menu]]
@@ -29,7 +30,7 @@
    [rumext.alpha :as mf]))
 
 (mf/defc header-options
-  [{:keys [section zoom page]}]
+  [{:keys [section zoom page file]}]
   (let [fullscreen (mf/use-ctx fs/fullscreen-context)
 
         has-permission? true
@@ -44,8 +45,13 @@
         (mf/use-callback
          (mf/deps page)
          (fn []
-           (st/emit! (dv/go-to-workspace (:id page)))))]
+           (st/emit! (dv/go-to-workspace (:id page)))))
 
+        open-share-dialog
+        (mf/use-callback
+         (mf/deps page)
+         (fn []
+           (modal/show! :share-link {:page page :file file})))]
 
     [:div.options-zone
      (case section
@@ -71,7 +77,7 @@
         i/full-screen)]
 
      (when has-permission?
-       [:span.btn-primary (tr "labels.share-prototype")])
+       [:span.btn-primary {:on-click open-share-dialog} (tr "labels.share-prototype")])
 
      (when has-permission?
        [:span.btn-text-dark {:on-click go-to-workspace} (tr "labels.edit-file")])]))
@@ -168,5 +174,6 @@
 
      [:& header-options {:section section
                          :page page
+                         :file file
                          :zoom zoom}]]))
 

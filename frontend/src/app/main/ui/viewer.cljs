@@ -138,6 +138,6 @@
   (when-let [data (mf/deref refs/viewer-data)]
     (let [key (str (get-in data [:file :id]))]
       [:*
-       [:div.modal-wrapper
+       #_[:div.modal-wrapper
         [:& share-link-dialog]]
        [:& viewer {:params props :data data :key key}]])))

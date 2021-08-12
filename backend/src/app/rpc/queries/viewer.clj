@@ -80,14 +80,8 @@
 (defn- decode-share-link-row
   [row]
   (-> row
-      (update :flags (fn [flags]
-                       (if (db/pgarray? flags "text")
-                         (db/decode-pgarray flags #{} (map keyword))
-                         #{})))
-      (update :pages (fn [pages]
-                       (if (db/pgarray? pages "uuid")
-                         (db/decode-pgarray pages #{})
-                         #{})))))
+      (update :flags db/decode-pgarray #{})
+      (update :pages db/decode-pgarray #{})))
 
 (defn- retrieve-share-link
   [conn id]

@@ -1,6 +1,43 @@
 .share-link-dialog {
   width: 475px;
 
+  .modal-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    height: unset;
+    padding: 16px 26px;
+
+    .btn-primary,
+    .btn-secondary,
+    .btn-warning {
+      width: 126px;
+      margin-bottom: 0px;
+
+      &:not(:last-child) {
+        margin-right: 10px;
+      }
+    }
+
+    .confirm-dialog {
+      display: flex;
+      flex-direction: column;
+      background-color: unset;
+
+      .description {
+        font-size: $fs14;
+
+        margin-bottom: 16px;
+
+      }
+      .actions {
+        display: flex;
+        justify-content: flex-end;
+      }
+    }
+  }
+
+
   .modal-content {
     padding: 26px;
 
@@ -17,83 +54,82 @@
         margin-right: 0px;
       }
     }
-  }
 
-  .modal-footer {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    .btn-get-link {
-      width: 126px;
-      margin-bottom: 0px;
 
-    }
-  }
+    .share-link-section {
+      margin-top: 12px;
+      label {
+        font-size: $fs11;
+        color: $color-black;
+      }
 
-  .link-container {
-    margin-top: 12px;
-    label {
-      font-size: $fs11;
-      color: $color-black;
-    }
+      .hint {
+        padding-top: 10px;
+        font-size: $fs11;
+      }
 
-    .hint {
-      padding-top: 10px;
-      font-size: $fs11;
-    }
-  }
-
-  .view-mode,
-  .access-mode {
-    display: flex;
-    flex-direction: column;
-
-    .title {
-      color: $color-black;
-      font-weight: 400;
+      .help-icon {
+        cursor: pointer;
+      }
     }
 
-    .items {
-      padding-left: 20px;
+    .view-mode,
+    .access-mode {
       display: flex;
+      flex-direction: column;
 
-      > .input-checkbox, > .input-radio {
+      .title {
+        color: $color-black;
+        font-weight: 400;
+      }
+
+      .items {
+        padding-left: 20px;
         display: flex;
 
-        /* input { */
-        /*   appearance: checkbox; */
-        /* } */
-
-        label {
+        > .input-checkbox, > .input-radio {
           display: flex;
-          align-items: center;
-          color: $color-black;
+          user-select: none;
 
-          .hint {
-            margin-left: 5px;
-            color: $color-gray-30;
-          }
-        }
+          /* input { */
+          /*   appearance: checkbox; */
+          /* } */
 
-        &.disabled {
           label {
-            color: $color-gray-30;
+            display: flex;
+            align-items: center;
+            color: $color-black;
+
+            .hint {
+              margin-left: 5px;
+              color: $color-gray-30;
+            }
+          }
+
+          &.disabled {
+            label {
+              color: $color-gray-30;
+            }
           }
         }
       }
     }
-  }
 
-  .pages-selection {
-    padding-left: 20px;
-    max-height: 200px;
-    overflow-y: scroll;
-  }
+    .pages-selection {
+      padding-left: 20px;
+      max-height: 200px;
+      overflow-y: scroll;
+      user-select: none;
 
-  .custom-input {
-    input {
-      padding: 0 0 0 15px;
+      label {
+        color: $color-black;
+      }
+    }
+
+    .custom-input {
+      input {
+        padding: 0 40px 0 15px;
+      }
     }
   }
-
 }

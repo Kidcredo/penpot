@@ -49,14 +49,16 @@
   [conn {:keys [profile-id file-id pages flags]}]
   (let [pages (db/create-array conn "uuid" pages)
         flags (->> (map name flags)
-                   (db/create-array conn "text"))]
-    (db/insert! conn :share-link
-                {:id (uuid/next)
-                 :file-id file-id
-                 :flags flags
-                 :pages pages
-                 :owner-id profile-id})))
-
+                   (db/create-array conn "text"))
+        slink (db/insert! conn :share-link
+                          {:id (uuid/next)
+                           :file-id file-id
+                           :flags flags
+                           :pages pages
+                           :owner-id profile-id})]
+    (-> slink
+        (update :pages db/decode-pgarray #{})
+        (update :flags db/decode-pgarray #{}))))
 
 ;; --- Mutation: Delete Share Link
 
@@ -70,5 +72,5 @@
   (db/with-atomic [conn pool]
     (let [slink (db/get-by-id conn :share-link id)]
       (files/check-edition-permissions! conn profile-id (:file-id slink))
-      (db/delete! conn :share-link id)
+      (db/delete! conn :share-link {:id id})
       nil)))

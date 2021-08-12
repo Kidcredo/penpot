@@ -38,6 +38,9 @@
 (def threads-ref
   (l/derived :comment-threads st/state))
 
+(def share-links
+  (l/derived :share-links st/state))
+
 ;; ---- Dashboard refs
 
 (def dashboard-local
