@@ -43,6 +43,7 @@
 (s/def ::section ::us/keyword)
 (s/def ::index ::us/integer)
 (s/def ::token (s/nilable ::us/not-empty-string))
+(s/def ::share-id ::us/uuid)
 
 (s/def ::viewer-path-params
   (s/keys :req-un [::file-id]
@@ -50,7 +51,7 @@
 
 (s/def ::viewer-query-params
   (s/keys :req-un [::index]
-          :opt-un [::token ::section]))
+          :opt-un [::share-id ::section]))
 
 (def routes
   [["/auth"
@@ -147,17 +148,17 @@
         [:& dashboard {:route route}]]
 
        :viewer
-       (let [index   (get-in route [:query-params :index])
-             token   (get-in route [:query-params :token])
-             section (get-in route [:query-params :section] :interactions)
-             file-id (get-in route [:path-params :file-id])
-             page-id (get-in route [:path-params :page-id])]
+       (let [index    (get-in route [:query-params :index])
+             share-id (get-in route [:query-params :share-id])
+             section  (get-in route [:query-params :section] :interactions)
+             file-id  (get-in route [:path-params :file-id])
+             page-id  (get-in route [:path-params :page-id])]
          [:& fs/fullscreen-wrapper {}
           [:& viewer-page {:page-id page-id
                            :file-id file-id
                            :section section
                            :index index
-                           :token token}]])
+                           :share-id share-id}]])
 
        :render-object
        (do

@@ -113,15 +113,12 @@
              href   (when slink
                       (let [pparams (:path-params route)
                             qparams (-> (:query-params route)
-                                        (assoc :token (:id slink))
+                                        (assoc :share-id (:id slink))
                                         (assoc :index "0"))
 
                             href    (rt/resolve router :viewer pparams qparams)]
                         (assoc cf/public-uri :fragment href)))]
          (reset! link (some-> href str)))))
-
-
-    (prn "KAKAK" @link)
 
     [:div.modal-overlay
      [:div.modal-container.share-link-dialog
@@ -144,14 +141,21 @@
          [:div.access-mode
           [:div.title "Can access"]
           [:div.items
+           [:div.input-checkbox.check-primary.disabled
+            [:input.check-primary.input-checkbox {:type "checkbox" :disabled true}]
+            [:label "Workspace" ]]
+
+
+
            [:div.input-checkbox.check-primary
             [:input {:type "checkbox"
                      :default-checked (contains? mode "viewer")}]
-            [:label "Viewer mode" [:span.hint "(default)"]]]
+            [:label "Viewer" [:span.hint "(default)"]]]
 
-           [:div.input-checkbox.check-primary.disabled
-            [:input.check-primary.input-checkbox {:type "checkbox"}]
-            [:label "Workspace" ]]]])
+           ;; [:div.input-checkbox.check-primary
+           ;;  [:input.check-primary.input-checkbox {:type "checkbox"}]
+           ;;  [:label "Handsoff" ]]
+           ]])
 
        (let [mode (:view @opts)]
          [:*

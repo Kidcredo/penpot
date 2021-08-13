@@ -53,12 +53,12 @@
 (s/def ::page-id ::us/uuid)
 (s/def ::file-id ::us/uuid)
 (s/def ::index ::us/integer)
-(s/def ::token (s/nilable ::us/string))
+(s/def ::share-id (s/nilable ::us/uuid))
 (s/def ::section ::us/string)
 
 (s/def ::initialize-params
   (s/keys :req-un [::page-id ::file-id]
-          :opt-un [::token]))
+          :opt-un [::share-id]))
 
 (defn initialize
   [{:keys [file-id] :as params}]
@@ -84,14 +84,12 @@
       (let [name (str "viewer-" file-id)]
         (unchecked-set ug/global "name" name)))))
 
-
 (defn finalize
   [params]
   (ptk/reify ::finalize
     ptk/UpdateEvent
     (update [_ state]
-      ;; TODO: complete this
-      (dissoc state :viewer-file :viewer-project :viewer-local))))
+      (dissoc state :viewer))))
 
 (defn select-frames
   [{:keys [objects] :as page}]
@@ -104,16 +102,16 @@
 
 (s/def ::fetch-bundle-params
   (s/keys :req-un [::page-id ::file-id]
-          :opt-un [::token]))
+          :opt-un [::share-id]))
 
 (defn fetch-bundle
-  [{:keys [file-id token] :as params}]
+  [{:keys [file-id share-id] :as params}]
   (us/assert ::fetch-bundle-params params)
   (ptk/reify ::fetch-file
     ptk/WatchEvent
     (watch [_ _ _]
       (let [params' (cond-> {:file-id file-id}
-                      (string? token) (assoc :token token))]
+                      (uuid? share-id) (assoc :share-id share-id))]
         (->> (rp/query :view-only-bundle params')
              (rx/mapcat
               (fn [{:keys [fonts] :as bundle}]
@@ -121,7 +119,8 @@
                        (bundle-fetched (merge bundle params))))))))))
 
 (defn bundle-fetched
-  [{:keys [project file share-links libraries users] :as bundle}]
+  [{:keys [project file share-links libraries users profile] :as bundle}]
+  ;; TODO: fix spec
   ;; (us/verify ::bundle bundle)
   (let [pages (->> (get-in file [:data :pages])
                    (map (fn [page-id]
@@ -136,6 +135,7 @@
             (assoc :share-links share-links)
             (assoc :viewer {:libraries (d/index-by :id libraries)
                             :users (d/index-by :id users)
+                            :profile profile
                             :project project
                             :pages pages
                             :file file}))))))
@@ -180,32 +180,6 @@
       (watch [_ _ _]
         (->> (rp/query :comments {:thread-id thread-id})
              (rx/map #(partial fetched %)))))))
-
-(defn create-share-link
-  []
-  (ptk/reify ::create-share-link
-    ptk/WatchEvent
-    (watch [_ state _]
-      (let [file-id (:current-file-id state)
-            page-id (:current-page-id state)]
-        (->> (rp/mutation! :create-file-share-token {:file-id file-id
-                                                     :page-id page-id})
-             (rx/map (fn [{:keys [token]}]
-                       #(assoc-in % [:viewer-data :token] token))))))))
-
-(defn delete-share-link
-  []
-  (ptk/reify ::delete-share-link
-    ptk/WatchEvent
-    (watch [_ state _]
-      (let [file-id (:current-file-id state)
-            page-id (:current-page-id state)
-            token   (get-in state [:viewer-data :token])
-            params  {:file-id file-id
-                     :page-id page-id
-                     :token token}]
-        (->> (rp/mutation :delete-file-share-token params)
-             (rx/map (fn [_] #(update % :viewer-data dissoc :token))))))))
 
 ;; --- Zoom Management
 

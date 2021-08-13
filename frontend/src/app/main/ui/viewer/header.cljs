@@ -126,7 +126,7 @@
        [:span.icon i/arrow-down]]]))
 
 (mf/defc header
-  [{:keys [project file page frame zoom section]}]
+  [{:keys [project file page frame zoom section profile]}]
   (let [
         ;; TODO
         ;; profile    (mf/deref refs/profile)

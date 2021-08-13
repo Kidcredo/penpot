@@ -53,6 +53,7 @@
         file    (:file data)
         users   (:users data)
         project (:project data)
+        profile (:profile data)
 
         page    (mf/use-memo
                  (mf/deps data page-id)
@@ -80,6 +81,7 @@
                  :file file
                  :page page
                  :frame frame
+                 :profile profile
                  :zoom (:zoom local)
                  :section section}]
 
